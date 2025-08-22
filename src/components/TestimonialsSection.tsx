@@ -72,18 +72,58 @@ const TestimonialsSection = () => {
     if (!sectionRef.current) return;
 
     const cards = sectionRef.current.querySelectorAll('.testimonial-card');
+    const navigation = sectionRef.current.querySelector('.carousel-nav');
 
-    gsap.from(cards, {
-      scale: 0.9,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: "back.out(1.7)",
+    // Create master timeline
+    const masterTL = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top 80%',
         toggleActions: "play none none reverse"
       }
+    });
+
+    // Set initial states with 3D perspective
+    gsap.set(cards, { 
+      opacity: 0,
+      scale: 0.8,
+      rotateX: 45,
+      transformOrigin: "center bottom",
+      z: -200
+    });
+
+    gsap.set(navigation, { y: 50, opacity: 0 });
+
+    // Animate cards with dramatic 3D entrance
+    masterTL
+      .to(cards, {
+        opacity: 1,
+        scale: 1,
+        rotateX: 0,
+        z: 0,
+        duration: 1.2,
+        stagger: 0.2,
+        ease: "back.out(2)"
+      })
+      .to(navigation, {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
+      }, "-=0.5");
+
+    // Add parallax effect to testimonial content
+    const testimonialContent = sectionRef.current.querySelectorAll('.testimonial-content');
+    testimonialContent.forEach(content => {
+      gsap.to(content, {
+        y: -20,
+        scrollTrigger: {
+          trigger: content,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 2
+        }
+      });
     });
 
     // Auto-play carousel
@@ -105,7 +145,7 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Carousel Container */}
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative max-w-6xl mx-auto carousel-container">
           <div className="overflow-hidden rounded-3xl">
             <div 
               ref={carouselRef}
@@ -117,50 +157,52 @@ const TestimonialsSection = () => {
                   <Card className="testimonial-card mx-4 bg-background border-border hover:shadow-card transition-all duration-300">
                     <CardContent className="p-8">
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        {/* Content */}
-                        <div className="space-y-6">
-                          <div className="flex items-center space-x-1 mb-4">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="w-5 h-5 fill-primary text-primary" />
-                            ))}
-                          </div>
-                          
-                          <div className="relative">
-                            <Quote className="absolute -top-2 -left-2 w-8 h-8 text-primary/20" />
-                            <blockquote className="text-lg text-muted-foreground leading-relaxed pl-6">
-                              "{testimonial.quote}"
-                            </blockquote>
-                          </div>
-
-                          <div className="pt-6 border-t border-border">
-                            <div className="mb-4">
-                              <h4 className="font-heading font-semibold text-foreground text-lg">
-                                {testimonial.name}
-                              </h4>
-                              <p className="text-muted-foreground">
-                                {testimonial.business} • {testimonial.location}
-                              </p>
+                        <div className="testimonial-content">
+                          {/* Content */}
+                          <div className="space-y-6">
+                            <div className="flex items-center space-x-1 mb-4">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="w-5 h-5 fill-primary text-primary" />
+                              ))}
+                            </div>
+                            
+                            <div className="relative">
+                              <Quote className="absolute -top-2 -left-2 w-8 h-8 text-primary/20" />
+                              <blockquote className="text-lg text-muted-foreground leading-relaxed pl-6">
+                                "{testimonial.quote}"
+                              </blockquote>
                             </div>
 
-                            {/* Metrics */}
-                            <div className="grid grid-cols-3 gap-4">
-                              <div className="text-center">
-                                <div className="text-2xl font-heading font-bold text-primary">
-                                  {testimonial.metrics.revenue.split('/')[0]}
-                                </div>
-                                <div className="text-xs text-muted-foreground">Doanh thu/tháng</div>
+                            <div className="pt-6 border-t border-border">
+                              <div className="mb-4">
+                                <h4 className="font-heading font-semibold text-foreground text-lg">
+                                  {testimonial.name}
+                                </h4>
+                                <p className="text-muted-foreground">
+                                  {testimonial.business} • {testimonial.location}
+                                </p>
                               </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-heading font-bold text-primary">
-                                  {testimonial.metrics.members.split(' ')[0]}
+
+                              {/* Metrics */}
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="text-center">
+                                  <div className="text-2xl font-heading font-bold text-primary">
+                                    {testimonial.metrics.revenue.split('/')[0]}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">Doanh thu/tháng</div>
                                 </div>
-                                <div className="text-xs text-muted-foreground">Hội viên</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-2xl font-heading font-bold text-primary">
-                                  {testimonial.metrics.roi.split(' ')[0]}
+                                <div className="text-center">
+                                  <div className="text-2xl font-heading font-bold text-primary">
+                                    {testimonial.metrics.members.split(' ')[0]}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">Hội viên</div>
                                 </div>
-                                <div className="text-xs text-muted-foreground">Hoàn vốn</div>
+                                <div className="text-center">
+                                  <div className="text-2xl font-heading font-bold text-primary">
+                                    {testimonial.metrics.roi.split(' ')[0]}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">Hoàn vốn</div>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -186,7 +228,7 @@ const TestimonialsSection = () => {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center mt-8 space-x-4">
+          <div className="carousel-nav flex items-center justify-center mt-8 space-x-4">
             <Button
               variant="outline"
               size="icon"

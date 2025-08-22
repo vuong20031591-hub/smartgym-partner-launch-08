@@ -68,20 +68,47 @@ const InvestmentSection = () => {
 
     const cards = cardsRef.current.querySelectorAll('.investment-card');
 
-    // Simple fade-in animation for investment cards
-    gsap.from(cards, {
-      y: 50,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: "power2.out",
+    // Create timeline for sequential card animations
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top 80%',
         toggleActions: "play none none reverse"
       }
     });
-  }, [gsap, createScrollTrigger, activeIndex, packages.length]);
+
+    // Set initial states
+    gsap.set(cards, { 
+      y: 100, 
+      opacity: 0, 
+      rotateY: -15,
+      scale: 0.9
+    });
+
+    // Animate cards with stagger and 3D effects
+    tl.to(cards, {
+      y: 0,
+      opacity: 1,
+      rotateY: 0,
+      scale: 1,
+      duration: 1,
+      stagger: 0.3,
+      ease: "back.out(1.7)"
+    });
+
+    // Add floating animation
+    cards.forEach((card, index) => {
+      gsap.to(card, {
+        y: -10,
+        duration: 2 + index * 0.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+        delay: index * 0.2
+      });
+    });
+
+  }, [gsap, createScrollTrigger]);
 
   const handleGetDetails = (packageName: string) => {
     console.log(`Xin bảng tính chi tiết cho gói ${packageName}`);
