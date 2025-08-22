@@ -8,7 +8,7 @@ const InvestmentSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const packages = [
     {
@@ -68,41 +68,20 @@ const InvestmentSection = () => {
 
     const cards = cardsRef.current.querySelectorAll('.investment-card');
 
-    // Pin section and create snap effect
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top top',
-      end: '+=200%',
-      pin: true,
-      scrub: 1,
-      snap: {
-        snapTo: 1 / (packages.length - 1),
-        duration: 0.5,
-        delay: 0.1
-      },
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const newIndex = Math.round(progress * (packages.length - 1));
-        if (newIndex !== activeIndex) {
-          setActiveIndex(newIndex);
-        }
-
-        // Animate cards based on progress
-        cards.forEach((card, index) => {
-          const cardProgress = Math.max(0, Math.min(1, (progress * packages.length) - index));
-          gsap.set(card, {
-            x: (index - progress * (packages.length - 1)) * 100 + '%',
-            opacity: 1 - Math.abs(index - progress * (packages.length - 1)) * 0.3,
-            scale: 1 - Math.abs(index - progress * (packages.length - 1)) * 0.1
-          });
-        });
+    // Simple fade-in animation for investment cards
+    gsap.from(cards, {
+      y: 50,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 80%',
+        toggleActions: "play none none reverse"
       }
     });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [gsap, ScrollTrigger, activeIndex, packages.length]);
+  }, [gsap, createScrollTrigger, activeIndex, packages.length]);
 
   const handleGetDetails = (packageName: string) => {
     console.log(`Xin bảng tính chi tiết cho gói ${packageName}`);
@@ -124,13 +103,13 @@ const InvestmentSection = () => {
         </div>
 
         {/* Investment Cards */}
-        <div ref={cardsRef} className="relative flex items-center justify-center">
+        <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {packages.map((pkg, index) => (
             <Card 
               key={index}
-              className={`investment-card absolute w-80 lg:w-96 ${
+              className={`investment-card ${
                 pkg.popular 
-                  ? 'bg-gradient-to-b from-card to-primary/5 border-primary shadow-primary scale-110 z-10' 
+                  ? 'bg-gradient-to-b from-card to-primary/5 border-primary shadow-primary scale-105' 
                   : 'bg-card/80 backdrop-blur-glass border-border/50'
               } transition-all duration-500`}
             >

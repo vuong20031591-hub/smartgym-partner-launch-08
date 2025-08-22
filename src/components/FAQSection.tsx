@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const FAQSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const faqs = [
     {
@@ -48,26 +48,19 @@ const FAQSection = () => {
 
     const faqItems = sectionRef.current.querySelectorAll('.faq-item');
 
-    gsap.set(faqItems, { y: 30, opacity: 0 });
-
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top 80%',
-      onEnter: () => {
-        gsap.to(faqItems, {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power2.out"
-        });
+    gsap.from(faqItems, {
+      y: 30,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 80%',
+        toggleActions: "play none none reverse"
       }
     });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [gsap, ScrollTrigger]);
+  }, [gsap, createScrollTrigger]);
 
   return (
     <section id="faq" ref={sectionRef} className="py-20 bg-gradient-subtle relative overflow-hidden">

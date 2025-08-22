@@ -10,7 +10,7 @@ import roiImage from '@/assets/roi-calculator.jpg';
 const ROICalculatorSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const [formData, setFormData] = useState({
     area: '',
@@ -39,30 +39,25 @@ const ROICalculatorSection = () => {
     const statElements = statsRef.current.querySelectorAll('.stat-number');
 
     // Animate stats numbers
-    ScrollTrigger.create({
-      trigger: statsRef.current,
-      start: 'top 80%',
-      onEnter: () => {
-        statElements.forEach((element, index) => {
-          const target = stats[index].value;
-          gsap.fromTo(element, 
-            { innerText: 0 },
-            {
-              innerText: target,
-              duration: 2,
-              ease: "power2.out",
-              snap: { innerText: 1 },
-              delay: index * 0.2
-            }
-          );
-        });
-      }
+    statElements.forEach((element, index) => {
+      const target = stats[index].value;
+      gsap.fromTo(element, 
+        { innerText: 0 },
+        {
+          innerText: target,
+          duration: 2,
+          ease: "power2.out",
+          snap: { innerText: 1 },
+          delay: index * 0.2,
+          scrollTrigger: {
+            trigger: statsRef.current,
+            start: 'top 80%',
+            toggleActions: "play none none reset"
+          }
+        }
+      );
     });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [gsap, ScrollTrigger, stats]);
+  }, [gsap, createScrollTrigger, stats]);
 
   const calculateROI = () => {
     const area = parseFloat(formData.area) || 0;

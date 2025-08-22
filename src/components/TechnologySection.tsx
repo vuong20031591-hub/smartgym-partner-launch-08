@@ -7,7 +7,7 @@ import technologyImage from '@/assets/technology-iot.jpg';
 const TechnologySection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const technologies = [
     {
@@ -62,39 +62,35 @@ const TechnologySection = () => {
       ease: "none"
     });
 
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top top",
-      end: () => `+=${totalWidth - window.innerWidth + 200}`,
-      pin: true,
-      scrub: 1,
-      animation: scrollTween,
-      anticipatePin: 1
+    gsap.to(container, {
+      x: () => -(totalWidth - window.innerWidth + 200),
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: () => `+=${totalWidth - window.innerWidth + 200}`,
+        pin: true,
+        scrub: 1,
+        anticipatePin: 1
+      }
     });
 
     // Card animations
     gsap.set(cards, { y: 60, opacity: 0 });
     
-    cards.forEach((card, index) => {
-      ScrollTrigger.create({
-        trigger: card,
-        start: "left 80%",
-        containerAnimation: scrollTween,
-        onEnter: () => {
-          gsap.to(card, {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power3.out"
-          });
+    cards.forEach((card) => {
+      gsap.to(card, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: card,
+          start: "left 80%",
+          toggleActions: "play none none reverse"
         }
       });
     });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [gsap, ScrollTrigger]);
+  }, [gsap, createScrollTrigger]);
 
   return (
     <section id="technology" ref={sectionRef} className="min-h-screen bg-gradient-subtle relative overflow-hidden">

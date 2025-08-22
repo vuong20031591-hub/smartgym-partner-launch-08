@@ -8,7 +8,7 @@ import successImage from '@/assets/success-story.jpg';
 const TestimonialsSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const testimonials = [
@@ -73,26 +73,23 @@ const TestimonialsSection = () => {
 
     const cards = sectionRef.current.querySelectorAll('.testimonial-card');
 
-    gsap.set(cards, { scale: 0.9, opacity: 0 });
-
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top 80%',
-      onEnter: () => {
-        gsap.to(cards, {
-          scale: 1,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: "back.out(1.7)"
-        });
+    gsap.from(cards, {
+      scale: 0.9,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "back.out(1.7)",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 80%',
+        toggleActions: "play none none reverse"
       }
     });
 
     // Auto-play carousel
     const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, [gsap, ScrollTrigger]);
+  }, [gsap, createScrollTrigger]);
 
   return (
     <section id="testimonials" ref={sectionRef} className="py-20 bg-card relative overflow-hidden">

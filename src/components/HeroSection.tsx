@@ -10,7 +10,7 @@ const HeroSection = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
-  const { gsap } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const kpiData = [
     { label: 'Đối tác thành công', value: 150, suffix: '+' },
@@ -92,11 +92,7 @@ const HeroSection = () => {
         scrub: true
       }
     });
-
-    return () => {
-      tl.kill();
-    };
-  }, [gsap]);
+  }, [gsap, createScrollTrigger]);
 
   const handleDownloadBrochure = () => {
     // Mock download action

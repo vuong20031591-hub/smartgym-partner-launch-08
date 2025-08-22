@@ -7,7 +7,7 @@ import processImage from '@/assets/process-steps.jpg';
 const ProcessStepsSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const steps = [
     {
@@ -65,41 +65,33 @@ const ProcessStepsSection = () => {
     gsap.set(line, { scaleY: 0, transformOrigin: 'top' });
 
     // Animate the connecting line
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top 70%',
-      end: 'bottom 30%',
-      scrub: 1,
-      onUpdate: (self) => {
-        gsap.to(line, {
-          scaleY: self.progress,
-          duration: 0.3,
-          ease: "none"
-        });
+    gsap.to(line, {
+      scaleY: 1,
+      duration: 2,
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 70%',
+        end: 'bottom 30%',
+        scrub: 1
       }
     });
 
     // Animate each step
     stepElements.forEach((element, index) => {
-      ScrollTrigger.create({
-        trigger: element,
-        start: 'top 80%',
-        onEnter: () => {
-          gsap.to(element, {
-            x: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-            delay: index * 0.1
-          });
+      gsap.from(element, {
+        x: -60,
+        opacity: 0,
+        duration: 0.8,
+        ease: "back.out(1.7)",
+        delay: index * 0.1,
+        scrollTrigger: {
+          trigger: element,
+          start: 'top 80%',
+          toggleActions: "play none none reverse"
         }
       });
     });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [gsap, ScrollTrigger]);
+  }, [gsap, createScrollTrigger]);
 
   return (
     <section id="process" ref={sectionRef} className="py-20 bg-background relative overflow-hidden">

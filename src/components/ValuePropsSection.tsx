@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const ValuePropsSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { gsap, ScrollTrigger } = useGSAP();
+  const { gsap, createScrollTrigger } = useGSAP();
 
   const valueProps = [
     {
@@ -47,7 +47,7 @@ const ValuePropsSection = () => {
 
     gsap.set(cards, { y: 40, opacity: 0 });
 
-    ScrollTrigger.create({
+    createScrollTrigger({
       trigger: sectionRef.current,
       start: 'top 80%',
       onEnter: () => {
@@ -60,11 +60,7 @@ const ValuePropsSection = () => {
         });
       }
     });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [gsap, ScrollTrigger]);
+  }, [gsap, createScrollTrigger]);
 
   return (
     <section id="benefits" ref={sectionRef} className="py-20 relative overflow-hidden">
